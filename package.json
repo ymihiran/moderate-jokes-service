@@ -1,0 +1,25 @@
+{
+  "name": "moderate-jokes-service",
+  "version": "1.0.0",
+  "description": "Enable a moderator to access submitted jokes. The moderator needs to authenticate  to this microservice. They can request a new joke from the \"Submit Jokes\"  microservice, edit the joke, change the \"type\" the submitter has chosen if necessary,  or add a new type based on the joke content.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "body-parser": "^1.20.3",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.8.2",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.7"
+  }
+}
