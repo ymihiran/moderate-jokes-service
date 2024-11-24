@@ -1,48 +1,54 @@
+
 const axios = require('axios');
 
-const SUBMIT_JOKES_URL = process.env.SUBMIT_JOKES_URL;
-const DELIVER_JOKES_URL = process.env.DELIVER_JOKES_URL;
 
-// Fetch a new joke from Submit Jokes Service
-exports.getNextJoke = async (req, res) => {
+exports.getPendingJokes = async (req, res) => {
   try {
-    const response = await axios.get(`${SUBMIT_JOKES_URL}/jokes/pending`);
+    console.log(SUBMIT_JOKES_URL);
+    const response = await axios.get(`${process.env.SUBMIT_JOKES_URL}/jokes/pending`);
     const jokes = response.data;
 
     if (jokes.length === 0) {
-      return res.status(404).json({ message: 'No jokes available for moderation.' });
+      return res.status(404).json({ message: 'No pending jokes available' });
     }
 
-    res.status(200).json(jokes[0]); // Return the first pending joke
-  } catch (error) {
-    res.status(500).json({ message: 'Error fetching jokes from Submit Jokes Service', error });
+    res.status(200).json(jokes); 
+  } catch (err) {
+    return res.status(500).json({ message: 'Error fetching pending jokes', error: err });
   }
 };
 
-// Approve and send joke to Deliver Jokes Service
+// Approve a joke and send it to the Deliver Jokes Service
 exports.approveJoke = async (req, res) => {
   const { id } = req.params;
-
+  
   try {
-    const response = await axios.post(`${DELIVER_JOKES_URL}/jokes`, req.body);
+    // Fetch the joke by ID 
+    const jokeResponse = await axios.get(`${process.env.SUBMIT_JOKES_URL}/jokes/${id}`);
+    const joke = jokeResponse.data;
 
-    // Remove the joke from Submit Jokes Service
-    await axios.delete(`${SUBMIT_JOKES_URL}/jokes/${id}`);
+    // Send approved joke to the Deliver Jokes Service
+    const deliveryResponse = await axios.post(`${process.env.DELIVER_JOKES_URL}/jokes`, joke);
 
-    res.status(200).json({ message: 'Joke approved and delivered', data: response.data });
-  } catch (error) {
-    res.status(500).json({ message: 'Error approving joke', error });
+    // Delete joke from Submit Jokes Service after approval
+    await axios.delete(`${process.env.SUBMIT_JOKES_URL}/jokes/${id}`);
+
+    res.status(200).json({ message: 'Joke approved and delivered', joke: deliveryResponse.data });
+  } catch (err) {
+    res.status(500).json({ message: 'Error approving joke', error: err });
   }
 };
 
-// Reject and delete joke from Submit Jokes Service
+// Reject a joke and delete it from Submit Jokes Service
 exports.rejectJoke = async (req, res) => {
   const { id } = req.params;
 
   try {
-    await axios.delete(`${SUBMIT_JOKES_URL}/jokes/${id}`);
+    // Delete joke from Submit Jokes Service
+    await axios.delete(`${process.env.SUBMIT_JOKES_URL}/jokes/${id}`);
+
     res.status(200).json({ message: 'Joke rejected and deleted' });
-  } catch (error) {
-    res.status(500).json({ message: 'Error rejecting joke', error });
+  } catch (err) {
+    res.status(500).json({ message: 'Error rejecting joke', error: err });
   }
 };

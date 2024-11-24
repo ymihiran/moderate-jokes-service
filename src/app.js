@@ -5,6 +5,7 @@ const mongoose = require('mongoose');
 const jokeRoutes = require('./routes/jokes.routes');
 const swaggerUi = require('swagger-ui-express');
 const swaggerJsDoc = require('swagger-jsdoc');
+const authRoutes = require(`./routes/auth.routes`)
 
 // Load environment variables
 dotenv.config();
@@ -16,22 +17,32 @@ app.use(bodyParser.json());
 
 // Swagger options
 const swaggerOptions = {
-  definition: {
-    openapi: '3.0.0',
-    info: {
-      title: 'Moderate Jokes Service',
-      version: '1.0.0',
-      description: 'API for moderating jokes',
-    },
-    servers: [
-      {
-        url: `http://localhost:${process.env.PORT || 3003}`, 
-        description: 'Local server',
+    definition: {
+      openapi: '3.0.0',
+      info: {
+        title: 'Moderate Jokes Service',
+        version: '1.0.0',
+        description: 'API for moderating jokes',
       },
-    ],
-  },
-  apis: ['./src/routes/jokes.routes.js'], 
-};
+      components: {
+        securitySchemes: {
+          BearerAuth: {
+            type: 'http',
+            scheme: 'bearer',
+            bearerFormat: 'JWT',
+          },
+        },
+      },
+      security: [
+        {
+          BearerAuth: [], 
+        },
+      ],
+    },
+    apis: ['./src/routes/*.js'], 
+
+
+  };
 
 // Swagger setup
 const swaggerDocs = swaggerJsDoc(swaggerOptions);
@@ -39,6 +50,7 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
 
 // Routes
 app.use('/jokes', jokeRoutes);
+app.use('/auth', authRoutes);
 
 // Connect to MongoDB
 mongoose

@@ -12,10 +12,22 @@ const router = express.Router();
 
 /**
  * @swagger
+ * components:
+ *   securitySchemes:
+ *     BearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
+ */
+
+/**
+ * @swagger
  * /jokes/pending:
  *   get:
  *     summary: Get all pending jokes
  *     tags: [Jokes]
+ *     security:
+ *       - BearerAuth: []  # This tells Swagger UI that this endpoint requires a Bearer token
  *     responses:
  *       200:
  *         description: List of pending jokes
@@ -41,6 +53,8 @@ router.get('/pending', authMiddleware, getPendingJokes);
  *   post:
  *     summary: Approve a joke
  *     tags: [Jokes]
+ *     security:
+ *       - BearerAuth: []  # Require Bearer token for this route
  *     parameters:
  *       - name: id
  *         in: path
@@ -62,6 +76,8 @@ router.post('/:id/approve', authMiddleware, approveJoke);
  *   post:
  *     summary: Reject a joke
  *     tags: [Jokes]
+ *     security:
+ *       - BearerAuth: []  # Require Bearer token for this route
  *     parameters:
  *       - name: id
  *         in: path
