@@ -22,7 +22,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /jokes/pending:
+ * /http://localhost:3001/jokes/pending:
  *   get:
  *     summary: Get all pending jokes
  *     tags: [Jokes]
